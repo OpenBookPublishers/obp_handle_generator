@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Generate handle URLs following Open Book Publishers's convention: https://hdl.handle.net/{prefix}/{first 8 characters of a UUID}.
+
+obp_handle_generator takes an optional argument, specifying the number of handle URLs to output. The default is 1.
+
+usage: python obp_handle_generator [iterations]
+
+(c) Javier Arias, Open Book Publishers, May 2019
+Use of this software is governed by the terms of the MIT license
+"""
+
+import csv
+import sys
+import uuid
+
+
+ROOT = "https://hdl.handle.net"
+PREFIX = "20.500.12434"
+
+
+def generate_handle(root, prefix, path):
+    return "%s/%s/%s" % (root, prefix, path)
+
+
+def short_uuids(iterations):
+    return [str(uuid.uuid4())[:8] for x in range(iterations)]
+
+
+def print_rows(root, prefix, n):
+    w = csv.writer(sys.stdout)
+    for out in [generate_handle(root, prefix, x) for x in short_uuids(n)]:
+        w.writerow([out])
+
+
+def exit(msg):
+    print(msg, file=sys.stderr)
+    sys.exit(1)
+
+
+def run():
+    args_no = len(sys.argv) - 1
+    if args_no == 0:
+        iterations = 1
+    elif args_no == 1:
+        try:
+            _, number = sys.argv
+            iterations = int(number)
+        except ValueError:
+            exit("Provide a valid integer or nothing. Received %s" % (number))
+    else:
+        exit("Provide no. of handles to generate or nothing (to generate 1)")
+    print_rows(ROOT, PREFIX, iterations)
+
+
+if __name__ == '__main__':
+    run()
