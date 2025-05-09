@@ -2,6 +2,7 @@ name: handle-generation
 
 on:
   workflow_dispatch:
+    inputs:
       iterations:
         description: 'Number of handles to generate'
         default: 1
